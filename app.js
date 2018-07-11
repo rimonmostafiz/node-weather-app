@@ -1,12 +1,24 @@
-const request = require('request');
+const yargs = require('yargs');
 
-var url = 'https://maps.google.com/maps/api/geocode/json?address=house21%road28%20banani%20model%20town%20dhaka';
+const geocode = require('./geocode/geocode.js');
 
-request({
-    url: url,
-    json: true
-}, (error, response, body) => {
-    console.log(`Street Address : ${body.results[0].formatted_address}`);
-    console.log(`Latitude : ${body.results[0].geometry.location.lat}`);
-    console.log(`Longitude : ${body.results[0].geometry.location.lng}`);
+const argv = yargs
+    .options({
+        a: {
+            demand: true,
+            alias: 'address',
+            describe: 'Address to fetch weather for',
+            string: true
+        }
+    })
+    .help()
+    .alias('help', 'h')
+    .argv;
+
+geocode.geocodeAddress(argv.address, (errorMsg, results) => {
+    if (errorMsg) {
+        console.log(errorMsg);
+    } else {
+        console.log(JSON.stringify(results, undefined, 2));
+    }
 });
